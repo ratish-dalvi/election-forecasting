@@ -1,7 +1,7 @@
 import pandas as pd
 
-from .helpers import process_poll_date
-from .config import ELECTION_DATE
+from helpers import process_poll_date
+from config import ELECTION_DATE
 
 
 class Entity(object):
