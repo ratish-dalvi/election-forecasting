@@ -32,10 +32,10 @@ def get_polls(year, refresh=False):
 
     state_polls = {}
     for abbr in STATE_ABBREVS:
-        fname = "%s/%s_%s.dat" % (polls_dir, abbr, year)
+        fname = "%s/%s_%s_poll.dat" % (polls_dir, abbr.lower(), year)
         state_polls[abbr] = pd.read_csv(fname) if path_exists(fname) else pd.DataFrame()
 
-    national_polls = pd.read_csv("%s/national_%s.dat" % (polls_dir, year))
+    national_polls = pd.read_csv("%s/national_%s_poll.dat" % (polls_dir, year))
 
     return (state_polls, national_polls)
 
@@ -47,6 +47,7 @@ def past_state_election_results():
 
         if len(df_dem) == 0:
             return 0.0
+
         return (df_dem.candidatevotes.iloc[0]) / (df_dem.candidatevotes.iloc[0] + df_rep.candidatevotes.iloc[0])
 
     df = pd.read_csv("../data/statewise-results-1976-2016-president.csv")
@@ -78,8 +79,8 @@ def download_polls(year):
 
         data = _all_state_data_to_df(page)
 
-        data.to_csv('%s/polls_%s/%s_%s.dat' % (
-            data_path, year, abbr, year), index=False)
+        data.to_csv('%s/polls_%s/%s_%s_poll.dat' % (
+            data_path, year, abbr.lower(), year), index=False)
 
     # National polls for general election:
     print("Getting national level polls")
@@ -91,7 +92,7 @@ def download_polls(year):
 
     data = _all_state_data_to_df(page)
 
-    data.to_csv('%s/polls_%s/national_%s.dat' % (
+    data.to_csv('%s/polls_%s/national_%s_poll.dat' % (
         data_path, year, year), index=False)
 
 

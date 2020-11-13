@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 from helpers import process_poll_date
 from config import ELECTION_DATE
@@ -15,6 +16,13 @@ class Entity(object):
             for _, row in df.iterrows()
         ]
 
+    def get_weighted_average_poll_dem_share(self, months):
+        start_dt = pd.to_datetime('2020-11-03') - pd.Timedelta(days=months*30)
+        polls = [p for p in self.polls if p.date > start_dt]
+        if len(polls) == 0:
+            return np.nan
+        return 1.0 * sum([p.p_dem * p.size for p in polls]) / sum([p.size for p in polls])
+
 
 class National(Entity):
     def __init__(self, df_polls, df_past_elections=None):
@@ -29,6 +37,9 @@ class State(Entity):
 
     def get_dem_share(self, year):
         return self.df_past_elections.loc[year]
+
+    def is_blue(self, year):
+        return self.get_dem_share(year) > 0.5
 
 
 class Poll(object):
