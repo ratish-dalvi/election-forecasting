@@ -50,13 +50,12 @@ The first term is basically the variance of the polling data. Since we know p_0 
 
 Empirically, $var(p_t | p_0)$ comes to be about $0:0002t$ using weighted least squares fitting (t is the number of months before election)
 
-<br><br>
+<br>
 Final step: Posterior
 
 $p_t|p_0 \sim N\Big( p_0,  \dfrac{p_0(1-p_0)}{n} + var (p_t | p_0) \Big)$
 
 $p_0 | p_{2016} \sim N\Big( p_{2016}, var(p_0 | p_{2016})\Big)$
-
 <br>
 Now, 
 
