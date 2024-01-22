@@ -14,10 +14,9 @@ The model tries to estimate a posterior for statewise democratic-share based on 
 **Is polling fundamentally useful if done right?**<br>
 Let's estimate the sampling variance of an average poll. In our data, we see that most polls are around 600-700 in size:
 
-$ SD = \sqrt {\dfrac {p_0(1-p_0)}{600}} = 0.02$
+$SD = \sqrt {\dfrac {p_0(1-p_0)}{600}} = 0.02$
 
-The small value of SD shows that variability due to sampling would be low enough to make the results informative. However, this assumes the polls were created by randomly sampling, which they are not.
-
+The small value of SD shows that variability due to sampling would be low enough to make the results informative. However, this assumes the polls were created by random sampling, which they are not.
 <br><br>
 For each state:
 
@@ -37,11 +36,11 @@ The goal is to estimate the posterior $p_0$ given $p_t$ and $p_{2016}$. We could
 Our goal is to try and estimate $var(\hat{p_t}  | p_0)$<br><br>
 
 $var(\hat{p_t} | p_0) = E (var(\hat{p_t} | p_t) | p_0) + var (E(\hat{p_t} | p_t) | p_0)$  ... law of total variance <br><br>
-$            = E(\dfrac{p_t(1-p_t)}{n} | p_0) + var (p_t | p_0)$      ... Assumes CLT on $\hat{p}_t$, which isn't true <br>
+$= E(\dfrac{p_t(1-p_t)}{n} | p_0) + var (p_t | p_0)$      ... Assumes CLT on $\hat{p}_t$, which isn't true <br>
 
-$            = \dfrac{E(p_t| p_0)- E(p_t| p_0)^2)}{n} + var (p_t | p_0)$ <br>
-$            = \dfrac{p_0(1-p_0)}{n} + \dfrac{n-1}{n}var (p_t | p_0)$ <br>
-$           \sim \dfrac{p_0(1-p_0)}{n} + var (p_t | p_0)$ <br>
+$= \dfrac{E(p_t| p_0)- E(p_t| p_0)^2)}{n} + var (p_t | p_0)$ <br>
+$= \dfrac{p_0(1-p_0)}{n} + \dfrac{n-1}{n}var (p_t | p_0)$ <br>
+$\sim \dfrac{p_0(1-p_0)}{n} + var (p_t | p_0)$ <br>
 
 <br>
 This gives:<br>
@@ -51,14 +50,12 @@ The first term is basically the variance of the polling data. Since we know p_0 
 
 Empirically, $var(p_t | p_0)$ comes to be about $0:0002t$ using weighted least squares fitting (t is the number of months before election)
 
-![Screen%20Shot%202020-11-13%20at%202.49.11%20PM.png](attachment:Screen%20Shot%202020-11-13%20at%202.49.11%20PM.png)
-
 <br><br>
 Final step: Posterior
 
-$ p_t|p_0 \sim N\Big( p_0,  \dfrac{p_0(1-p_0)}{n} + var (p_t | p_0) \Big)$
+$p_t|p_0 \sim N\Big( p_0,  \dfrac{p_0(1-p_0)}{n} + var (p_t | p_0) \Big)$
 
-$ p_0 | p_{2016} \sim N\Big( p_{2016}, var(p_0 | p_{2016})\Big)$
+$p_0 | p_{2016} \sim N\Big( p_{2016}, var(p_0 | p_{2016})\Big)$
 
 <br>
 Now, $var (p_t | p_0) \sim 0.0002t$ <br>
