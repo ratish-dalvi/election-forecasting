@@ -60,9 +60,9 @@ $p_0 | p_{2016} \sim N\Big( p_{2016}, var(p_0 | p_{2016})\Big)$
 <br>
 Now, 
 
-$$var(p_t | p_0) \sim 0.0002t$$ <br>
-$$var(p_0 | p_{2016})$$ can be estimated from historical elections  <br>
-$$p_{2016}$$ is known  <br>
+$var(p_t | p_0) \sim 0.0002t$ <br>
+$var(p_0 | p_{2016})$ can be estimated from historical elections  <br>
+$p_{2016}$ is known  <br>
 
 We use MCMC sampling to estimate the distribution of $p_0$ by using observed values of $p_t$ from polling data.
 Please refer to the notebook for the implementation of this appraoch.
