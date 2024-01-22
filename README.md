@@ -42,9 +42,9 @@ $= \dfrac{E(p_t| p_0)- E(p_t| p_0)^2)}{n} + var (p_t | p_0)$ <br>
 $= \dfrac{p_0(1-p_0)}{n} + \dfrac{n-1}{n}var (p_t | p_0)$ <br>
 $\sim \dfrac{p_0(1-p_0)}{n} + var (p_t | p_0)$ <br>
 
-<br>
+<br
 This gives:<br>
-Estimate of $var(p_t | p_0) =  var(\hat{p_t} | p_0) -  \dfrac{p_0(1-p_0)}{n} $
+Estimate of $$var(p_t | p_0) = var(\hat{p_t} | p_0) - \dfrac{p_0(1-p_0)}{n}$$
 
 The first term is basically the variance of the polling data. Since we know p_0 for the last election and variance of polling data (for each month), we can compute the value of $var(p_t | p_0)$ as a function of t.
 
@@ -58,8 +58,11 @@ $p_t|p_0 \sim N\Big( p_0,  \dfrac{p_0(1-p_0)}{n} + var (p_t | p_0) \Big)$
 $p_0 | p_{2016} \sim N\Big( p_{2016}, var(p_0 | p_{2016})\Big)$
 
 <br>
-Now, $var (p_t | p_0) \sim 0.0002t$ <br>
-$var(p_0 | p_{2016})$ can be estimated from historical elections  <br>
-$p_{2016}$ is known  <br>
+Now, 
 
-We use MCMC sampling to estimate the distribution of $p_0$ by using observed values of $p_t$ from polling data
+$$var(p_t | p_0) \sim 0.0002t$$ <br>
+$$var(p_0 | p_{2016})$$ can be estimated from historical elections  <br>
+$$p_{2016}$$ is known  <br>
+
+We use MCMC sampling to estimate the distribution of $p_0$ by using observed values of $p_t$ from polling data.
+Please refer to the notebook for the implementation of this appraoch.
