@@ -14,12 +14,11 @@ import pandas as pd
 urllib3.disable_warnings()
 
 file_path = pathlib.Path(__file__).parent.absolute()
-data_path = os.path.abspath('%s/../data' % file_path)
+data_path = os.path.abspath("%s/../data" % file_path)
 
 STATE_ABBREVS = np.loadtxt(
-    os.path.join(data_path,
-                 'state_abbreviations.txt'),
-    usecols=(1, ), dtype=np.str)
+    os.path.join(data_path, "state_abbreviations.txt"), usecols=(1,), dtype=np.str
+)
 
 
 def get_polls(year, refresh=False):
@@ -42,20 +41,24 @@ def get_polls(year, refresh=False):
 
 def past_state_election_results():
     def extract_dem_share(df):
-        df_dem = df[df.party == 'democrat']
-        df_rep = df[df.party == 'republican']
+        # names were changed
+        df["party"] = df.party_simplified
+        df_dem = df[df.party == "DEMOCRAT"]
+        df_rep = df[df.party == "REPUBLICAN"]
 
         if len(df_dem) == 0:
             return 0.0
 
-        return (df_dem.candidatevotes.iloc[0]) / (df_dem.candidatevotes.iloc[0] + df_rep.candidatevotes.iloc[0])
+        return (df_dem.candidatevotes.iloc[0]) / (
+            df_dem.candidatevotes.iloc[0] + df_rep.candidatevotes.iloc[0]
+        )
 
-    df = pd.read_csv("../data/statewise-results-1976-2016-president.csv")
-    return df.groupby(['state_po', 'year']).apply(extract_dem_share)
+    df = pd.read_csv("../data/statewise-results-1976-2020-president.csv")
+    return df.groupby(["state_po", "year"]).apply(extract_dem_share)
 
 
 def download_polls(year):
-    ''' Load and write all state-wise polling data for year '''
+    """Load and write all state-wise polling data for year"""
 
     master_table = _get_rcp_master_table()
 
@@ -65,8 +68,7 @@ def download_polls(year):
 
     # State-level polls
     for abbr in STATE_ABBREVS:
-
-        print('Getting polls for state %s' % abbr)
+        print("Getting polls for state %s" % abbr)
 
         poll_url = _get_state_poll_url(abbr, year, master_table)
 
@@ -74,76 +76,80 @@ def download_polls(year):
             continue
 
         http = urllib3.PoolManager()
-        html_doc = http.request('GET', poll_url)
+        html_doc = http.request("GET", poll_url)
         page = BeautifulSoup(html_doc.data, features="lxml")
 
         data = _all_state_data_to_df(page)
 
-        data.to_csv('%s/polls_%s/%s_%s_poll.dat' % (
-            data_path, year, abbr.lower(), year), index=False)
+        data.to_csv(
+            "%s/polls_%s/%s_%s_poll.dat" % (data_path, year, abbr.lower(), year),
+            index=False,
+        )
 
     # National polls for general election:
     print("Getting national level polls")
     nat_poll_url = _get_national_poll_url(year, master_table)
 
     http = urllib3.PoolManager()
-    html_doc = http.request('GET', nat_poll_url)
+    html_doc = http.request("GET", nat_poll_url)
     page = BeautifulSoup(html_doc.data, features="lxml")
 
     data = _all_state_data_to_df(page)
 
-    data.to_csv('%s/polls_%s/national_%s_poll.dat' % (
-        data_path, year, year), index=False)
+    data.to_csv(
+        "%s/polls_%s/national_%s_poll.dat" % (data_path, year, year), index=False
+    )
 
 
 # Private functions:
 
+
 def _get_rcp_master_table():
-    ''' Read RCP latest_polls html table. '''
+    """Read RCP latest_polls html table."""
 
     http = urllib3.PoolManager()
     html_doc = http.request(
-        'GET',
-        'http://www.realclearpolitics.com/epolls/latest_polls/president/#')
+        "GET", "http://www.realclearpolitics.com/epolls/latest_polls/president/#"
+    )
 
     page = BeautifulSoup(html_doc.data, features="lxml")
     return str(page.find(id="table-1"))
 
 
 def _get_state_poll_url(abbr, year, master_table):
-    ''' Get URL to state-level polls '''
+    """Get URL to state-level polls"""
 
     # Find URL string
-    start = master_table.find('epolls/%s/president/%s' % (year, abbr.lower()))
-    if(start == -1):
-        print('No polls found for %s, skipping.' % abbr)
-        return ''
+    start = master_table.find("epolls/%s/president/%s" % (year, abbr.lower()))
+    print(start)
+    if start == -1:
+        print("No polls found for %s, skipping." % abbr)
+        return ""
 
     end = start + master_table[start::].find("html") + 4
 
-    url = "http://www.realclearpolitics.com/%s%s" % \
-        (master_table[start:end], '#polls')
+    url = "http://www.realclearpolitics.com/%s%s" % (master_table[start:end], "#polls")
+    print(url)
     return url
 
 
 def _get_national_poll_url(year, master_table):
-    ''' Get URL to national-level poll '''
+    """Get URL to national-level poll"""
 
     # Find URL string
-    start = master_table.find('epolls/%s/president/us/general_election' % year)
-    if(start == -1):
-        print('No national polls found, skipping.')
-        return ''
+    start = master_table.find("epolls/%s/president/us/general_election" % year)
+    if start == -1:
+        print("No national polls found, skipping.")
+        return ""
 
     end = start + master_table[start::].find("html") + 4
 
-    url = "http://www.realclearpolitics.com/%s%s" % \
-        (master_table[start:end], '#polls')
+    url = "http://www.realclearpolitics.com/%s%s" % (master_table[start:end], "#polls")
     return url
 
 
 def _all_state_data_to_df(page):
-    ''' Get all state polling data from page and comple in dataframe '''
+    """Get all state polling data from page and comple in dataframe"""
 
     # Compile all poll data for the state:
     poll_names = []
@@ -152,49 +158,40 @@ def _all_state_data_to_df(page):
     rep_perc = []
     poll_sizes = []
 
-    header = page.find(id="polling-data-full").find_all('tr')[0]
+    header = page.find(id="polling-data-full").find_all("tr")[0]
     # Does the democrat appear first in the table?
     dem_first = (str(header).find("(D)")) < str(header).find("(R)")
 
     poll_html_list = [
-        x.find_all("td") for x in
-        page.find(id="polling-data-full").find_all('tr')
+        x.find_all("td") for x in page.find(id="polling-data-full").find_all("tr")
     ][1::]
 
     for poll_html in poll_html_list:
-
         if dem_first:
             poll_dict = dict(
-                zip(["poll",
-                     "dates",
-                     "size",
-                     "error",
-                     "dem",
-                     "rep",
-                     "margin"],
-                    [y.get_text() for y in poll_html]))
+                zip(
+                    ["poll", "dates", "size", "error", "dem", "rep", "margin"],
+                    [y.get_text() for y in poll_html],
+                )
+            )
         else:
             poll_dict = dict(
-                zip(["poll",
-                     "dates",
-                     "size",
-                     "error",
-                     "rep",
-                     "dem",
-                     "margin"],
-                    [y.get_text() for y in poll_html]))
+                zip(
+                    ["poll", "dates", "size", "error", "rep", "dem", "margin"],
+                    [y.get_text() for y in poll_html],
+                )
+            )
 
         # Overwrite pollster with properly parsed name:
         try:
-            pollster_name = poll_html[0].find(
-                None, {"class": "normal_pollster_name"})
-            poll_dict['poll'] = pollster_name.text
+            pollster_name = poll_html[0].find(None, {"class": "normal_pollster_name"})
+            poll_dict["poll"] = pollster_name.text
         except AttributeError:
             # Skip non-polls (e.g., RCP Average)
             continue
 
         # If no sample size given, skip:
-        if poll_dict['size'] in ['LV', 'RV', '--']:
+        if poll_dict["size"] in ["LV", "RV", "--"]:
             continue
 
         # Append poll info to lists:
@@ -204,11 +201,13 @@ def _all_state_data_to_df(page):
         dem_perc.append(float(poll_dict["dem"]))
         poll_sizes.append(int(poll_dict["size"].lstrip().split(" ")[0]))
 
-    data = pd.DataFrame(list(
-        zip(poll_names, poll_dates, rep_perc, dem_perc, poll_sizes)),
-        columns=['Name', 'Date', 'Republican', 'Democrat', 'Size'])
+    data = pd.DataFrame(
+        list(zip(poll_names, poll_dates, rep_perc, dem_perc, poll_sizes)),
+        columns=["Name", "Date", "Republican", "Democrat", "Size"],
+    )
 
     return data
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     download_polls(2020)

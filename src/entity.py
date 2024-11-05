@@ -17,11 +17,14 @@ class Entity(object):
         ]
 
     def get_weighted_average_poll_dem_share(self, months):
-        start_dt = pd.to_datetime('2020-11-03') - pd.Timedelta(days=months*30)
+        start_dt = pd.to_datetime("2024-11-04") - pd.Timedelta(days=months * 30)
         polls = [p for p in self.polls if p.date > start_dt]
         if len(polls) == 0:
             return np.nan
-        return 1.0 * sum([p.p_dem * p.size for p in polls]) / sum([p.size for p in polls])
+        out = (
+            1.0 * sum([p.p_dem * p.size for p in polls]) / sum([p.size for p in polls])
+        )
+        return round(out, 4)
 
 
 class National(Entity):
